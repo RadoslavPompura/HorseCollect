@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Web;
 
 namespace HorseCollect.Json
@@ -23,6 +24,8 @@ namespace HorseCollect.Json
         public string bfMarketId_Win { get; set; }
         public string bfMarketId_Place { get; set; }
         public string bfSelectionId { get; set; }
+        public string winAvailableMoney { get; set; }
+        public string placeAvailableMoney { get; set; }
         public int numberOfRunners { get; set; }
         public int numberOfWinners { get; set; }
 

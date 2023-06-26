@@ -297,6 +297,8 @@ namespace HorseCollect.Ctrl
                             double placeBackOdds = selectionItem.placeBackOdds;
                             double eacyWayLayOdds = selectionItem.eachWayLayOdds;
                             double eacyWayBackOdds = selectionItem.eachWayBackOdds;
+                            double winAvailableMoney = selectionItem.amountWinAvailableToLay;
+                            double placeAvailableMoney = selectionItem.amountPlaceAvailableToLay;
                             double favPrice = selectionItem.favPrice;
 
                             HorseApiItem_Bf horseItem = new HorseApiItem_Bf();
@@ -313,9 +315,11 @@ namespace HorseCollect.Ctrl
                             horseItem.bfWinBack = winBackOdds.ToString();
                             horseItem.bfPlaceLay = placeLayOdds.ToString();
                             horseItem.bfPlaceBack = placeBackOdds.ToString();
-                            horseItem.bfEachWayLay = eacyWayLayOdds.ToString();
-                            horseItem.bfEachWayBack = eacyWayBackOdds.ToString();
-                            horseItem.bfFavPrice = favPrice.ToString();
+                            horseItem.winAvailableMoney = winAvailableMoney.ToString();
+                            horseItem.placeAvailableMoney = placeAvailableMoney.ToString();
+                            //horseItem.bfEachWayLay = eacyWayLayOdds.ToString();
+                            //horseItem.bfEachWayBack = eacyWayBackOdds.ToString();
+                            //horseItem.bfFavPrice = favPrice.ToString();
                             horseItem.bfSelectionId = selectionItem.selectionId.ToString();
                             horseItem.numberOfRunners = numberOfRunners;
                             horseItem.numberOfWinners = NumberOfWinners;
@@ -651,191 +655,6 @@ namespace HorseCollect.Ctrl
             return bf_EventList;
         }
 
-        
-
-        public bool doHorseScrap1(List<CategoryModel> lisCategory)
-        {
-            string sport = "Horse Racing";
-            int eventType = 7;
-            if (string.IsNullOrEmpty(sport) || eventType == 0)
-                return false;
-            try
-            {
-
-                TimeRange startTimeRange = new TimeRange();
-                startTimeRange.From = DateTime.Now;
-                //startTimeRange.To = DateTime.Today.AddDays(1).AddHours(8);
-                startTimeRange.To = DateTime.Today.AddDays(1);
-
-                MarketFilter marketFilter = new MarketFilter();
-                marketFilter.InPlayOnly = false;
-                //Time Range
-                marketFilter.MarketStartTime = startTimeRange;
-                //EventType Id
-                ISet<string> eventTypeIds = new HashSet<string>();
-                marketFilter.EventTypeIds = eventTypeIds;
-                eventTypeIds.Add(eventType.ToString());
-
-                ISet<string> marketTypes = new HashSet<string>();
-                marketTypes.Add("WIN");
-                marketTypes.Add("PLACE");
-                marketTypes.Add("OTHER_PLACE");
-                marketFilter.MarketTypeCodes = marketTypes;
-
-                // Country
-                ISet<string> countryName = new HashSet<string>();
-                countryName.Add("AU");
-                countryName.Add("US");
-                countryName.Add("ZA");
-                countryName.Add("FR");
-                marketFilter.MarketCountries = countryName;
-
-                IList<EventResult> eventResultList = clientDelay.ListEvents(marketFilter).Result.Response;
-                if (eventResultList == null || eventResultList.Count < 1)
-                {
-                    logger.severe("[BetFair][International]Event Count : Null");
-                    return false;
-                }
-
-                logger.severe("[BetFair][International]Event Count : " + eventResultList.Count.ToString());
-
-                //ISet<string> listRace = new HashSet<string>();
-                List<string> listRace = new List<string>();
-                int nMarketCount = 0;
-
-                foreach (EventResult race in eventResultList)
-                {
-                    if (race.Event.CountryCode != null)
-                    {
-                        if (race.Event.Venue != null)
-                        {
-                            for (int i = 0; i < lisCategory.Count; i++)
-                            {
-                                if (race.Event.Venue.ToLower().Contains(lisCategory[i].RaceName.ToLower()))
-                                {
-                                    nMarketCount = nMarketCount + race.MarketCount;
-                                    lisCategory[i].EventId = race.Event.Id;
-                                    listRace.Add(race.Event.Id);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Sort Category List  /////////////////////////////
-                List<CategoryModel> lisRemoveCate = new List<CategoryModel>();
-                for (int i = 0; i < lisCategory.Count; i++)
-                {
-                    if (lisCategory[i].EventId == "")
-                        lisRemoveCate.Add(lisCategory[i]);
-                }
-
-                for (int i = 0; i < lisRemoveCate.Count; i++)
-                {
-                    lisCategory.Remove(lisRemoveCate[i]);
-                }
-
-                ISet<MarketProjection> projection = new HashSet<MarketProjection>();
-                projection.Add(MarketProjection.RUNNER_DESCRIPTION);
-                projection.Add(MarketProjection.RUNNER_METADATA);
-                projection.Add(MarketProjection.MARKET_DESCRIPTION);
-                projection.Add(MarketProjection.MARKET_START_TIME);
-                projection.Add(MarketProjection.EVENT);
-
-                List<string> listWinMarketId = new List<string>();
-                List<string> listPlaceMarketId = new List<string>();
-                List<string> list4PlaceMarketId = new List<string>();
-                List<string> list2PlaceMarketId = new List<string>();
-                List<string> list3PlaceMarketId = new List<string>();
-                List<string> list5PlaceMarketId = new List<string>();
-
-                //marketFilter.EventIds = listRace;
-                //IList<MarketCatalogue> marketCatalogueList1 = clientDelay.ListMarketCatalogue(marketFilter, projection, null, nMarketCount).Result.Response;
-                for (int m = 0; m < listRace.Count; m++)
-                {
-                    ISet<string> raceSet = new HashSet<string>();
-                    raceSet.Add(listRace[m]);
-                    marketFilter.EventIds = raceSet;
-
-                    IList<MarketCatalogue> marketCatalogueList = clientDelay.ListMarketCatalogue(marketFilter, projection, null, nMarketCount).Result.Response;
-                    if (marketCatalogueList == null || marketCatalogueList.Count < 1)
-                    {
-                        logger.severe("[BetFair][International]Market Count : Null");
-                        continue;
-                    }
-
-                    //    foreach (MarketCatalogue catalogue in marketCatalogueList)
-                    //    {
-                    //        for (int i = 0; i < lisCategory.Count; i++)
-                    //        {
-                    //            if (catalogue.Event.Id == lisCategory[i].EventId)
-                    //            {
-                    //                for (int k = 0; k < lisCategory[i].RaceList.Count; k++)
-                    //                {
-                    //                    string catalogueTime = Utils.getTimeFormat(Convert.ToInt32(catalogue.Description.MarketTime.TimeOfDay.TotalMinutes));
-
-                    //                    if (catalogueTime == lisCategory[i].RaceList[k].RaceTime)
-                    //                    {
-                    //                        lisCategory[i].RaceList[k] = getSelectionId(catalogue, lisCategory[i].RaceList[k]);
-                    //                        if (catalogue.Description.MarketType == "WIN")
-                    //                        {
-                    //                            listWinMarketId.Add(catalogue.MarketId);
-                    //                            lisCategory[i].RaceList[k].Win_MarketId = catalogue.MarketId;
-                    //                        }
-                    //                        else if (catalogue.Description.MarketType == "PLACE")
-                    //                        {
-                    //                            listPlaceMarketId.Add(catalogue.MarketId);
-                    //                            lisCategory[i].RaceList[k].Place_MarketId = catalogue.MarketId;
-                    //                        }
-                    //                        else if (catalogue.MarketName == "4 TBP")
-                    //                        {
-                    //                            list4PlaceMarketId.Add(catalogue.MarketId);
-                    //                            lisCategory[i].RaceList[k].Place4_MarketId = catalogue.MarketId;
-                    //                        }
-                    //                        else if (catalogue.MarketName == "2 TBP")
-                    //                        {
-                    //                            list2PlaceMarketId.Add(catalogue.MarketId);
-                    //                            lisCategory[i].RaceList[k].Place2_MarketId = catalogue.MarketId;
-                    //                        }
-                    //                        else if (catalogue.MarketName == "3 TBP")
-                    //                        {
-                    //                            list3PlaceMarketId.Add(catalogue.MarketId);
-                    //                            lisCategory[i].RaceList[k].Place3_MarketId = catalogue.MarketId;
-                    //                        }
-                    //                        else if (catalogue.MarketName == "5 TBP")
-                    //                        {
-                    //                            list5PlaceMarketId.Add(catalogue.MarketId);
-                    //                            lisCategory[i].RaceList[k].Place5_MarketId = catalogue.MarketId;
-                    //                        }
-                    //                        break;
-                    //                    }
-                    //                }
-                    //                break;
-                    //            }
-                    //        }
-                    //    }
-                    //}
-
-                    logger.severe("[BetFair][International]Catalogue Count : " + (listWinMarketId.Count + listPlaceMarketId.Count + list4PlaceMarketId.Count + list2PlaceMarketId.Count + list3PlaceMarketId.Count + list5PlaceMarketId.Count).ToString());
-                    //lisCategory = getWinPlaceOdd(listWinMarketId, lisCategory, "WIN");
-                    //lisCategory = getWinPlaceOdd(listPlaceMarketId, lisCategory, "PLACE");
-                    //lisCategory = getWinPlaceOdd(list4PlaceMarketId, lisCategory, "PLACE4");
-                    //lisCategory = getWinPlaceOdd(list2PlaceMarketId, lisCategory, "PLACE2");
-                    //lisCategory = getWinPlaceOdd(list3PlaceMarketId, lisCategory, "PLACE3");
-                    //lisCategory = getWinPlaceOdd(list5PlaceMarketId, lisCategory, "PLACE5");
-
-                    logger.severe("[International]Scrape End!");
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.severe("[Betfair][International]Error : " + ex.Message);
-            }
-            return true;
-        }
-
-
         private void getWinPlaceOdd(List<string> lismarketId_, ref List<BetfairResItem> bf_ResList, string marketType)
         {
             try
@@ -901,6 +720,7 @@ namespace HorseCollect.Ctrl
                                                             double backValue = runner.ExchangePrices.AvailableToBack[0].Price;
 
                                                             double amountWinAvailableToLay = runner.ExchangePrices.AvailableToLay[0].Size;
+                                                            double amountWinAvailableToBack = runner.ExchangePrices.AvailableToBack[0].Size;
                                                             if (amountWinAvailableToLay < minLayAmount)
                                                             {
                                                                 bf_MarketItem.runnerList[i].winLayOdds = 200;
@@ -916,6 +736,7 @@ namespace HorseCollect.Ctrl
                                                             logger.severe(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
 
                                                             bf_MarketItem.runnerList[i].winBackOdds = backValue;
+                                                            bf_MarketItem.runnerList[i].amountWinAvailableToLay = amountWinAvailableToLay;
                                                         }
                                                         catch (Exception ex) { }
                                                         //lisIds = new HashSet<string>();
@@ -1026,6 +847,7 @@ namespace HorseCollect.Ctrl
                                                             }
                                                             logger.severe(bf_MarketItem.runnerList[i].runnnerName + "  " + amountPlaceAvailableToLay);
                                                             bf_MarketItem.runnerList[i].placeBackOdds = backValue;
+                                                            bf_MarketItem.runnerList[i].amountPlaceAvailableToLay = amountPlaceAvailableToLay;
                                                         }
                                                         catch (Exception ex) { }
                                                         //lisIds = new HashSet<string>();

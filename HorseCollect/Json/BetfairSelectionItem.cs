@@ -16,5 +16,7 @@ namespace HorseCollect.Json
         public double eachWayLayOdds { get; set; }
         public double eachWayBackOdds { get; set; }
         public double favPrice { get; set; }
+        public double amountWinAvailableToLay { get; set; }
+        public double amountPlaceAvailableToLay { get; set; }
     }
 }
