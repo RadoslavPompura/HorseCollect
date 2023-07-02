@@ -1,31 +1,41 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+@Scripts.Render("~/bundles/app")
+@*<div class="jumbotron">
+        <h1>ASP.NET</h1>
+        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+        <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    </div>*@
 
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+    <div class="col-md-6" style="display:block">
+        <h2>Betfair Horse</h2>
+        <button type="button" style="margin-top:20px;" class="btn btn-primary waves-effect waves-light" onclick="testBetfair()">Test Betfair</button>
+        <div data-select2-id="15" style=" display: flex; margin-top: 20px; align-items:center;">
+            <label class="form-label">Logger</label>
+            <select class="form-control select2-search-disable select2-hidden-accessible" id="selectDebug" data-select2-id="6" tabindex="-1" aria-hidden="true" style=" margin-left:30px;">
+                <option data-select2-id="8" value = 0>No Debug</option>
+                <option data-select2-id="8" value=1>severe</option>
+                <option data-select2-id="8" value = 2>information</option>
+            </select>
+            <div id ="loading" style="display:none;">
+                <img src="~/Resources/Images/4507fca357c7.gif" width="100px" height="100px" />
+            </div>
+        </div>
+        <div  style="margin-top:20px; ">
+            <textarea id="formmessage" class="form-control" rows="30" style="width:100%; max-width: 100%"></textarea>
+        </div>
+        @*<button> Debug </button>
+            <button>  </button>
+            <button> Test Betfair </button>*@
+
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    <div class="col-md-6">
+        <h2>Bet365 Horse</h2>
+        <button type="button" style="margin-top:20px;" class="btn btn-primary waves-effect waves-light">Test Bet365</button>
+        <div style="margin-top:20px;">
+            <textarea id="formmessage" class="form-control" rows="30" style="width:100%; max-width: 100%"></textarea>
+        </div>
     </div>
 </div>
