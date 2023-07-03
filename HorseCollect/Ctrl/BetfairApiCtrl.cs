@@ -31,6 +31,7 @@ namespace HorseCollect.Ctrl
         private int dateRange = 1;
         public List<HorseApiItem_Bf> arrangedHorseList;
         public Logger logger;
+        public int debugMode = 0;
 
         public BetfairApiCtrl(BetfairAccount account)
         {
@@ -257,10 +258,11 @@ namespace HorseCollect.Ctrl
         }
 
         //Implement Horse data Arrange
-        public List<HorseApiItem_Bf> getApiHorseList()
+        public List<HorseApiItem_Bf> getApiHorseList(int debugMode)
         {
             try
             {
+                this.debugMode = debugMode;
                 List<HorseApiItem_Bf> horseList = new List<HorseApiItem_Bf>();
 
                 List<BetfairResItem> resList = doScrapHorse();
@@ -337,6 +339,10 @@ namespace HorseCollect.Ctrl
             }
             catch (Exception ee)
             {
+                if (debugMode == 1)
+                {
+                    logger.severe(ee.ToString());
+                }
             }
 
             return null;
@@ -421,12 +427,12 @@ namespace HorseCollect.Ctrl
 
                 if (eventResultList == null || eventResultList.Count < 1)
                 {
-                    logger.severe("[BetFair][Soccer]Event Count : Null");
+                    if(this.debugMode == 2) logger.debug("[BetFair][Soccer]Event Count : Null");
                     return null;
                 }
 
 
-                logger.severe("[BetFair][Horse Racing]Event Count : " + eventResultList.Count.ToString());
+                logger.debug("[BetFair][Horse Racing]Event Count : " + eventResultList.Count.ToString());
 
                 List<string> listRace = new List<string>();
 
@@ -545,108 +551,21 @@ namespace HorseCollect.Ctrl
                                 bf_SelectionItem.selectionId = item.SelectionId.ToString();
                                 bf_SelectionItem.runnnerName = item.RunnerName.ToString();
 
-                                //string handicapStr = string.Empty;
-
-                                //try
-                                //{
-                                //    handicapStr = item.Handicap.ToString();
-                                //}
-                                //catch (Exception ee)
-                                //{
-                                //}
-
-                                //if (handicapStr != "0")
-                                //    bf_SelectionItem.handicapName = handicapStr;
-
                                 betfairMarketItem.runnerList.Add(bf_SelectionItem);
                             }
 
                             bf_EventList[m].marketList.Add(betfairMarketItem);
-                            //bf_EventList[m].openTime = catalogueTime;
-                            //total_MarketList.Add(betfairMarketItem);
                         }
 
                         oldRaceTime = catalogueTime;
                     }
                 }
-                
-                //IList<MarketCatalogue> marketCatalogueList1 = clientDelay.ListMarketCatalogue(marketFilter, projection, null, nMarketCount).Result.Response;
-
-                //ISet<string> raceSet = new HashSet<string>();
-                //int groupCount = 0;
-                //int totalMarketCounts = 0;
-                //int savedIndex = 0;
-                //for (int m = 0; m < bf_EventList.Count; m++)
-                //{
-                //    //ISet<string> raceSet = new HashSet<string>();
-
-                //    groupCount++;
-                //    totalMarketCounts += bf_EventList[m].marketCounts;
-
-                //    if(totalMarketCounts > 100)
-                //    {
-                //        totalMarketCounts -= bf_EventList[m].marketCounts;
-
-                //        m--;
-
-                //        {
-                //            marketFilter.EventIds = raceSet;
-
-                //            //ISet<string> marketCountsSet = new HashSet<string>();
-                //            //marketCountsSet.Add(bf_EventList[m].marketCounts);
-
-                //            //marketFilter. = raceSet;
-                //            //int maxMarkets = bf_EventList[m].marketCounts;
-
-                //            IList<MarketCatalogue> marketCatalogueList = clientDelay.ListMarketCatalogue(marketFilter, projection, null, totalMarketCounts).Result.Response;
-                //            if (marketCatalogueList == null || marketCatalogueList.Count < 1)
-                //            {
-                //                logger.severe("[BetFair][GB&IE]Market Count : Null");
-                //                return null;
-                //            }
-
-
-
-                //            groupCount = 0;
-                //            totalMarketCounts = 0;
-                //            savedIndex = 0;
-                //            raceSet = new HashSet<string>();
-                //        }
-                //    }
-                //    else
-                //    {
-                //        raceSet.Add(bf_EventList[m].eventId);
-                //    }
-                //}
-
-                //for (int m = 0; m < bf_EventList.Count; m++)
-                //{
-                //    bf_EventList[m].marketList = new List<BetfairMarketItem>();
-
-                //    foreach (BetfairMarketItem bfMarketItem in total_MarketList)
-                //    {
-                //        if (bf_EventList[m].eventId.ToString().Equals(bfMarketItem.eventId.ToString()))
-                //        {
-                //            bf_EventList[m].marketList.Add(bfMarketItem);
-
-                //        }
-                //    }
-                //}
-
-                //int bb = 0;
-
-                //m_handlerWriteStatus("[BetFair]Catalogue Count : " + marketCatalogueList.Count.ToString());
-                //logger.severe("[BetFair][Soccer]Catalogue Count : " + (listWinMarketId.Count + listPlaceMarketId.Count + list4PlaceMarketId.Count + list2PlaceMarketId.Count + list3PlaceMarketId.Count + list5PlaceMarketId.Count).ToString());
+               
                 getWinPlaceOdd(listWinMarketId, ref bf_EventList, "WIN");
                 getWinPlaceOdd(listEachWayMarketId, ref bf_EventList, "EACH-WAY");
                 getWinPlaceOdd(listPlaceMarketId, ref bf_EventList, "PLACE");
-                //lisCategory = getWinPlaceOdd(listPlaceMarketId, lisCategory, "PLACE");
-                //lisCategory = getWinPlaceOdd(list4PlaceMarketId, lisCategory, "PLACE4");
-                //lisCategory = getWinPlaceOdd(list2PlaceMarketId, lisCategory, "PLACE2");
-                //lisCategory = getWinPlaceOdd(list3PlaceMarketId, lisCategory, "PLACE3");
-                //lisCategory = getWinPlaceOdd(list5PlaceMarketId, lisCategory, "PLACE5");
 
-                logger.severe("[GB&IE]Scrape End!");
+                logger.debug("[GB&IE]Scrape End!");
             }
             catch (Exception ex)
             {
@@ -666,8 +585,6 @@ namespace HorseCollect.Ctrl
 
                 PriceProjection priceProjection = new PriceProjection();
                 ISet<PriceData> priceData = new HashSet<PriceData>();
-                //priceData.Add(PriceData.SP_AVAILABLE);
-                //priceData.Add(PriceData.SP_TRADED);
                 priceData.Add(PriceData.EX_BEST_OFFERS);
                 priceData.Add(PriceData.EX_ALL_OFFERS);
                 priceData.Add(PriceData.EX_TRADED);
@@ -731,9 +648,9 @@ namespace HorseCollect.Ctrl
                                                             }
                                                             if(bf_MarketItem.runnerList[i].runnnerName.Equals("Capture The Drama") )
                                                             {
-                                                                logger.severe(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
+                                                                logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
                                                             }
-                                                            logger.severe(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
+                                                            logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
 
                                                             bf_MarketItem.runnerList[i].winBackOdds = backValue;
                                                             bf_MarketItem.runnerList[i].amountWinAvailableToLay = amountWinAvailableToLay;
@@ -748,11 +665,9 @@ namespace HorseCollect.Ctrl
                                         }
                                         catch (Exception ex)
                                         {
-                                            logger.severe("[Betfair]Error(getValue) :" + ex.Message);
+                                            logger.debug("[Betfair]Error(getValue) :" + ex.Message);
                                         }
                                         break;
-
-                                        //getValue(marketBook, ref bf_MarketItem);
                                     }
 
                                     if (bf_MarketItem.marketId_EachWay == marketBook.MarketId && marketType.Equals("EACH-WAY"))
@@ -788,9 +703,9 @@ namespace HorseCollect.Ctrl
                                                             }
                                                             if (bf_MarketItem.runnerList[i].runnnerName.Equals("Capture The Drama"))
                                                             {
-                                                                logger.severe(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
+                                                                logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
                                                             }
-                                                            logger.severe(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
+                                                            logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
 
                                                             bf_MarketItem.runnerList[i].eachWayBackOdds = backValue;
                                                         }
@@ -845,7 +760,7 @@ namespace HorseCollect.Ctrl
                                                             {
                                                                 bf_MarketItem.runnerList[i].placeLayOdds = value;
                                                             }
-                                                            logger.severe(bf_MarketItem.runnerList[i].runnnerName + "  " + amountPlaceAvailableToLay);
+                                                            logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountPlaceAvailableToLay);
                                                             bf_MarketItem.runnerList[i].placeBackOdds = backValue;
                                                             bf_MarketItem.runnerList[i].amountPlaceAvailableToLay = amountPlaceAvailableToLay;
                                                         }
@@ -865,13 +780,6 @@ namespace HorseCollect.Ctrl
 
                                         //getValue(marketBook, ref bf_MarketItem);
                                     }
-
-
-                                    //if (lisCategory[i].RaceList[k].Win_MarketId == marketBook.MarketId || lisCategory[i].RaceList[k].Place_MarketId == marketBook.MarketId || lisCategory[i].RaceList[k].Place4_MarketId == marketBook.MarketId || lisCategory[i].RaceList[k].Place2_MarketId == marketBook.MarketId
-                                    //    || lisCategory[i].RaceList[k].Place3_MarketId == marketBook.MarketId || lisCategory[i].RaceList[k].Place5_MarketId == marketBook.MarketId)
-                                    //{
-                                    //    lisCategory[i].RaceList[k] = getValue(marketBook, lisCategory[i].RaceList[k], marketType);
-                                    //}
                                 }
                             }
                         }
@@ -880,26 +788,6 @@ namespace HorseCollect.Ctrl
                         lisIds = new HashSet<string>();
                     }
                 }
-
-                //IList<MarketBook> marketBookList1 = clientDelay.ListMarketBook(lisIds, priceProjection, null, null).Result.Response;
-                //if (marketBookList1 == null || marketBookList1.Count < 1)
-                //{
-                //    return lisCategory;
-                //}
-                //foreach (MarketBook marketBook in marketBookList1)
-                //{
-                //    for (int i = 0; i < lisCategory.Count; i++)
-                //    {
-                //        //for (int k = 0; k < lisCategory[i].RaceList.Count; k++)
-                //        //{
-                //        //    if (lisCategory[i].RaceList[k].Win_MarketId == marketBook.MarketId || lisCategory[i].RaceList[k].Place_MarketId == marketBook.MarketId || lisCategory[i].RaceList[k].Place4_MarketId == marketBook.MarketId || lisCategory[i].RaceList[k].Place2_MarketId == marketBook.MarketId
-                //        //        || lisCategory[i].RaceList[k].Place3_MarketId == marketBook.MarketId || lisCategory[i].RaceList[k].Place5_MarketId == marketBook.MarketId)
-                //        //    {
-                //        //        lisCategory[i].RaceList[k] = getValue(marketBook, lisCategory[i].RaceList[k], marketType);
-                //        //    }
-                //        //}
-                //    }
-                //}
             }
             catch (Exception ex)
             {
@@ -908,212 +796,6 @@ namespace HorseCollect.Ctrl
 
             return;
         }
-
-
-        //public void getWinAndPlaceResult (ref List<tbl_detail_log> bf_ResList, string marketType)
-        //{
-        //    try
-        //    {
-        //        if (bf_ResList == null || bf_ResList.Count < 1)
-        //        {
-        //            return;
-        //        }
-
-        //        PriceProjection priceProjection = new PriceProjection();
-        //        ISet<PriceData> priceData = new HashSet<PriceData>();
-        //        //priceData.Add(PriceData.SP_AVAILABLE);
-        //        //priceData.Add(PriceData.SP_TRADED);
-        //        priceData.Add(PriceData.EX_BEST_OFFERS);
-        //        priceData.Add(PriceData.EX_ALL_OFFERS);
-        //        priceData.Add(PriceData.EX_TRADED);
-        //        priceProjection.PriceData = priceData;
-        //        int minLayAmount = 4;
-        //        List<string> listIdList = new List<string>();
-
-        //        foreach (tbl_detail_log elem in bf_ResList)
-        //        {
-        //            if(marketType.Equals("Place") && !string.IsNullOrEmpty(elem.betfair_MarketID_Place))
-        //                listIdList.Add(elem.betfair_MarketID_Place);
-                    
-        //            if (marketType.Equals("Win") && !string.IsNullOrEmpty(elem.betfair_MarketID_Win))
-        //                listIdList.Add(elem.betfair_MarketID_Win);
-        //        }
-
-        //        //listIdList = lismarketId_;
-
-        //        ISet<string> lisIds = new HashSet<string>();
-        //        int n = 0;
-
-        //        for (int m = 0; m < listIdList.Count; m++)
-        //        {
-        //            n++;
-        //            lisIds.Add(listIdList[m]);
-        //            if (n % 6 == 0)
-        //            {
-        //                IList<MarketBook> marketBookList = clientDelay.ListMarketBook(lisIds, priceProjection, null, null).Result.Response;
-        //                if (marketBookList == null || marketBookList.Count < 1)
-        //                {
-        //                    continue;
-        //                }
-
-        //                foreach (MarketBook marketBook in marketBookList)
-        //                {
-                               
-        //                    try
-        //                    {
-        //                        if (marketBook.Runners == null || marketBook.Runners.Count < 1)
-        //                            break;
-
-        //                        //bf_MarketItem.marketId_Win = marketBook.MarketId;
-        //                        //bf_MarketItem.NumberOfRunners = marketBook.NumberOfActiveRunners;
-        //                        //bf_MarketItem.NumberOfWinners = marketBook.NumberOfWinners;
-
-        //                        foreach (Runner runner in marketBook.Runners)
-        //                        {
-        //                            foreach (tbl_detail_log betfairRunnerItem in bf_ResList)
-        //                            {
-        //                                if (runner.SelectionId.ToString() == betfairRunnerItem.betfair_SelectionID && marketType.Equals("Place"))
-        //                                {
-        //                                    try
-        //                                    {
-        //                                        string result_Status = runner.Status.ToString();
-
-        //                                        if (result_Status.Equals("LOSER"))
-        //                                        {
-        //                                            betfairRunnerItem.betfair_ResultProcessed = 2;
-        //                                        }
-
-        //                                        if (result_Status.Equals("WINNER"))
-        //                                        {
-        //                                            betfairRunnerItem.betfair_ResultProcessed = 1;
-        //                                            betfairRunnerItem.betfair_Place = 1;
-        //                                        }
-
-        //                                        if (result_Status.Equals("ACTIVE"))
-        //                                        {
-        //                                        }
-
-        //                                        if (result_Status.Equals("REMOVED"))
-        //                                        {
-        //                                        }
-        //                                    }
-        //                                    catch (Exception ex) { }
-        //                                    //lisIds = new HashSet<string>();
-        //                                    break;
-
-        //                                }
-
-        //                                if (runner.SelectionId.ToString() == betfairRunnerItem.betfair_SelectionID && marketType.Equals("Win"))
-        //                                {
-        //                                    try
-        //                                    {
-        //                                        string result_Status = runner.Status.ToString();
-
-        //                                        if (result_Status.Equals("LOSER"))
-        //                                        {
-        //                                            betfairRunnerItem.betfair_ResultProcessed = 2;
-        //                                        }
-
-        //                                        if (result_Status.Equals("WINNER"))
-        //                                        {
-        //                                            betfairRunnerItem.betfair_ResultProcessed = 1;
-        //                                            betfairRunnerItem.betfair_Win = 1;
-        //                                            betfairRunnerItem.betfair_Place = 1;
-        //                                        }
-
-        //                                        if (result_Status.Equals("ACTIVE"))
-        //                                        {
-        //                                        }
-
-        //                                        if (result_Status.Equals("REMOVED"))
-        //                                        {
-        //                                        }
-        //                                    }
-        //                                    catch (Exception ex) { }
-        //                                    //lisIds = new HashSet<string>();
-        //                                    break;
-
-        //                                }
-
-        //                            }
-        //                        }
-        //                    }
-        //                    catch (Exception ex)
-        //                    {
-        //                        logger.severe("[Betfair]Error(getValue) :" + ex.Message);
-        //                    }
-        //                    //break;
-
-        //                            //getValue(marketBook, ref bf_MarketItem);
-                                
-
-        //                        //if (bf_MarketItem.marketId_Place == marketBook.MarketId && marketType.Equals("PLACE"))
-        //                        //{
-        //                        //    try
-        //                        //    {
-        //                        //        if (marketBook.Runners == null || marketBook.Runners.Count < 1)
-        //                        //            break;
-
-        //                        //        bf_MarketItem.marketId_Place = marketBook.MarketId;
-        //                        //        bf_MarketItem.NumberOfRunners = marketBook.NumberOfActiveRunners;
-        //                        //        bf_MarketItem.NumberOfWinners = marketBook.NumberOfWinners;
-
-        //                        //        if (!checkRunners(bf_MarketItem.NumberOfRunners, bf_MarketItem.NumberOfWinners))
-        //                        //            continue;
-
-        //                        //        foreach (Runner runner in marketBook.Runners)
-        //                        //        {
-        //                        //            for (int i = 0; i < bf_MarketItem.runnerList.Count; i++)
-        //                        //            {
-        //                        //                if (runner.SelectionId.ToString() == bf_MarketItem.runnerList[i].selectionId)
-        //                        //                {
-        //                        //                    try
-        //                        //                    {
-        //                        //                        double value = runner.ExchangePrices.AvailableToLay[0].Price;
-        //                        //                        double backValue = runner.ExchangePrices.AvailableToBack[0].Price;
-
-        //                        //                        double amountPlaceAvailableToLay = runner.ExchangePrices.AvailableToLay[0].Size;
-        //                        //                        if (amountPlaceAvailableToLay <= minLayAmount)
-        //                        //                        {
-        //                        //                            bf_MarketItem.runnerList[i].placeLayOdds = 200;
-        //                        //                        }
-        //                        //                        else
-        //                        //                        {
-        //                        //                            bf_MarketItem.runnerList[i].placeLayOdds = value;
-        //                        //                        }
-        //                        //                        logger.severe(bf_MarketItem.runnerList[i].runnnerName + "  " + amountPlaceAvailableToLay);
-        //                        //                        bf_MarketItem.runnerList[i].placeBackOdds = backValue;
-        //                        //                    }
-        //                        //                    catch (Exception ex) { }
-        //                        //                    //lisIds = new HashSet<string>();
-        //                        //                    break;
-
-        //                        //                }
-        //                        //            }
-        //                        //        }
-        //                        //    }
-        //                        //    catch (Exception ex)
-        //                        //    {
-        //                        //        logger.severe("[Betfair]Error(getValue) :" + ex.Message);
-        //                        //    }
-        //                        //    break;
-
-        //                        //    //getValue(marketBook, ref bf_MarketItem);
-        //                        //}
-        //                }
-
-        //                //}
-        //                lisIds = new HashSet<string>();
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logger.severe("[Betfair]Error(getWinPlaceOdd) : " + ex.Message);
-        //    }
-
-        //    return;
-        //}
 
         public string getMarketId(List<string> marketIdList, string marketId)
         {
@@ -1133,32 +815,6 @@ namespace HorseCollect.Ctrl
 
             return "";
         }
-
-        //private RaceModel getSelectionId(MarketCatalogue catalogue, RaceModel raceModel)
-        //{
-        //    try
-        //    {
-        //        if (catalogue.Runners == null || catalogue.Runners.Count < 1)
-        //            return raceModel;
-
-        //        for (int i = 0; i < raceModel.HorseList.Count; i++)
-        //        {
-        //            foreach (RunnerCatalog runner in catalogue.Runners)
-        //            {
-        //                if (raceModel.HorseList[i].HorseName.ToLower().Contains(runner.RunnerName.ToLower()))
-        //                {
-        //                    raceModel.HorseList[i].SelectionId = runner.SelectionId.ToString();
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logger.severe("[Betfair]Error(getSelectionId) : " + ex.Message);
-        //    }
-        //    return raceModel;
-        //}
 
         private void getValue(MarketBook marketBook, ref BetfairMarketItem raceModel)
         {
@@ -1181,81 +837,6 @@ namespace HorseCollect.Ctrl
                             {
                                 double value = runner.ExchangePrices.AvailableToLay[0].Price;
                                 raceModel.runnerList[i].winLayOdds = value;
-
-                                //try
-                                //{
-                                //    if (runner.TotalMatched == 0 || marketBook.TotalMatched == 0)
-                                //    {
-                                //        raceModel.HorseList[i].MatchPercent = "0";
-                                //    }
-                                //    else
-                                //    {
-                                //        double percent = runner.TotalMatched * 100 / marketBook.TotalMatched;
-                                //        if (percent == 0)
-                                //        {
-                                //            raceModel.HorseList[i].MatchPercent = "0";
-                                //        }
-                                //        else
-                                //        {
-                                //            raceModel.HorseList[i].MatchPercent = percent.ToString("F2");
-                                //        }
-                                //    }
-                                //}
-                                //catch (Exception ex)
-                                //{
-                                //    raceModel.HorseList[i].MatchPercent = "0";
-                                //}
-
-                                //double value = 0;
-                                ////double value = (double)runner.LastPriceTraded;
-                                //if (runner.ExchangePrices.AvailableToBack.Count < 2 || runner.ExchangePrices.AvailableToLay.Count < 2)
-                                //{
-                                //    value = -1;
-                                //}
-                                //else
-                                //{
-                                //    try
-                                //    {
-
-
-                                //        //if (Utils.getGapValue(runner.ExchangePrices.AvailableToBack[0].Price, runner.ExchangePrices.AvailableToLay[0].Price) >= 0.3)
-                                //        //{
-
-                                //        //}
-                                //        //else
-                                //        //{
-                                //        //    value = (runner.ExchangePrices.AvailableToLay[0].Price + runner.ExchangePrices.AvailableToBack[0].Price) / 2;
-                                //        //}
-                                //    }
-                                //    catch (Exception ex)
-                                //    {
-                                //        value = -1;
-                                //    }
-                                //}
-                                //if (marketType == "WIN")
-                                //{
-                                //    raceModel.HorseList[i].Win_value = value.ToString();
-                                //}
-                                //else if (marketType == "PLACE")
-                                //{
-                                //    raceModel.HorseList[i].Place_value = value.ToString();
-                                //}
-                                //else if (marketType == "PLACE4")
-                                //{
-                                //    raceModel.HorseList[i].Place4_value = value.ToString();
-                                //}
-                                //else if (marketType == "PLACE2")
-                                //{
-                                //    raceModel.HorseList[i].Place2_value = value.ToString();
-                                //}
-                                //else if (marketType == "PLACE3")
-                                //{
-                                //    raceModel.HorseList[i].Place3_value = value.ToString();
-                                //}
-                                //else if (marketType == "PLACE5")
-                                //{
-                                //    raceModel.HorseList[i].Place5_value = value.ToString();
-                                //}
                             }
                             catch (Exception ex) { }
                             break;
@@ -1346,8 +927,6 @@ namespace HorseCollect.Ctrl
                 raceids.Add("1.174788821");
 
                 IList<MarketBook> marketList = clientDelay.ListMarketBook(raceids).Result.Response;
-
-
             }
             catch (Exception ex)
             {
@@ -1383,27 +962,6 @@ namespace HorseCollect.Ctrl
             }
         }
 
-        //public void ReadCookiesFromDisk()
-        //{
-        //    try
-        //    {
-        //        using (Stream stream = File.Open("BetfairAcc-cookie.bin", FileMode.Open))
-        //        {
-        //            logger.severe("[BetFair]Reading cookies from disk...");
-        //            BinaryFormatter formatter = new BinaryFormatter();
-
-        //            logger.severe("[BetFair]Done.");
-        //            this.m_cookieContainer = (CookieContainer)formatter.Deserialize(stream);
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        logger.severe("[BetFair]Problem reading cookies from disk: ");
-        //        this.m_cookieContainer = new CookieContainer();
-        //    }
-        //    InitHttpClient();
-        //}
-
         public CookieContainer ReadCookiesFromDisk()
         {
             CookieContainer cookieJar = new CookieContainer();
@@ -1434,8 +992,6 @@ namespace HorseCollect.Ctrl
 
                 string logText = (string.Format("[{0}] {1}", Utils.getCurrentUKTime().ToString("yyyy-MM-dd HH:mm:ss"), status));
                 LogToFile(logFilepath + "\\Log\\" + string.Format("log_{0}.txt", Utils.getCurrentUKTime().ToString("yyyy-MM-dd")), logText);
-                //rtLog.AppendText(logText);
-                //rtLog.ScrollToCaret();
             }
             catch (Exception)
             {

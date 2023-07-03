@@ -53,19 +53,19 @@ namespace HorseCollect.Controllers
 
         public string getBfData(string debugMode)
         {
-            if (debugMode == "0") //No debug
-            {
-            }
-            else if (debugMode == "1")  //severe
-            {
-            }
-            else if (debugMode == "2") //information
-            { 
-            }
+            ////if (debugMode == "0") //No debug
+            ////{
+            ////}
+            ////else if (debugMode == "1")  //severe
+            ////{
+            ////}
+            ////else if (debugMode == "2") //information
+            ////{ 
+            ////}
 
             ctrl.initApi(bfAccount.UserName, bfAccount.Password, bfKey);
 
-            List<HorseApiItem_Bf> resList = ctrl.getApiHorseList();
+            List<HorseApiItem_Bf> resList = ctrl.getApiHorseList(Utils.ParseToInt(debugMode));
             if (resList == null)
             {
                 doLoginBetfair();

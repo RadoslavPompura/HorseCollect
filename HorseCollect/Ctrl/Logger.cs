@@ -20,7 +20,24 @@ namespace HorseCollect.Ctrl
                 string logFilepath = System.Web.Hosting.HostingEnvironment.MapPath("/");
 
                 string logText = (string.Format("[{0}] {1}", Utils.getCurrentUKTime().ToString("yyyy-MM-dd HH:mm:ss"), status));
-                LogToFile(logFilepath + "\\Log\\" + string.Format("log_{0}.txt", Utils.getCurrentUKTime().ToString("yyyy-MM-dd")), logText);
+                LogToFile(logFilepath + "\\Log\\" + string.Format("log_severe_{0}.txt", Utils.getCurrentUKTime().ToString("yyyy-MM-dd")), logText);
+                //rtLog.AppendText(logText);
+                //rtLog.ScrollToCaret();
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        public void debug(string status)
+        {
+            try
+            {
+                string logFilepath = System.Web.Hosting.HostingEnvironment.MapPath("/");
+
+                string logText = (string.Format("[{0}] {1}", Utils.getCurrentUKTime().ToString("yyyy-MM-dd HH:mm:ss"), status));
+                LogToFile(logFilepath + "\\Log\\" + string.Format("log_debug_{0}.txt", Utils.getCurrentUKTime().ToString("yyyy-MM-dd")), logText);
                 //rtLog.AppendText(logText);
                 //rtLog.ScrollToCaret();
             }
