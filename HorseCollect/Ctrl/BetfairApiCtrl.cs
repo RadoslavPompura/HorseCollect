@@ -432,7 +432,7 @@ namespace HorseCollect.Ctrl
                 }
 
 
-                logger.debug("[BetFair][Horse Racing]Event Count : " + eventResultList.Count.ToString());
+                if (this.debugMode == 2)  logger.debug("[BetFair][Horse Racing]Event Count : " + eventResultList.Count.ToString());
 
                 List<string> listRace = new List<string>();
 
@@ -569,7 +569,7 @@ namespace HorseCollect.Ctrl
             }
             catch (Exception ex)
             {
-                logger.severe("[Betfair][GB&IE]Error : " + ex.Message);
+                 logger.severe("[Betfair][GB&IE]Error : " + ex.Message);
             }
             return bf_EventList;
         }
@@ -648,9 +648,9 @@ namespace HorseCollect.Ctrl
                                                             }
                                                             if(bf_MarketItem.runnerList[i].runnnerName.Equals("Capture The Drama") )
                                                             {
-                                                                logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
+                                                                if (this.debugMode == 2) logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
                                                             }
-                                                            logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
+                                                            if (this.debugMode == 2)  logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
 
                                                             bf_MarketItem.runnerList[i].winBackOdds = backValue;
                                                             bf_MarketItem.runnerList[i].amountWinAvailableToLay = amountWinAvailableToLay;
@@ -703,9 +703,9 @@ namespace HorseCollect.Ctrl
                                                             }
                                                             if (bf_MarketItem.runnerList[i].runnnerName.Equals("Capture The Drama"))
                                                             {
-                                                                logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
+                                                                if (this.debugMode == 2) logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
                                                             }
-                                                            logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
+                                                            if (this.debugMode == 2) logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountWinAvailableToLay);
 
                                                             bf_MarketItem.runnerList[i].eachWayBackOdds = backValue;
                                                         }
@@ -760,7 +760,7 @@ namespace HorseCollect.Ctrl
                                                             {
                                                                 bf_MarketItem.runnerList[i].placeLayOdds = value;
                                                             }
-                                                            logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountPlaceAvailableToLay);
+                                                            if (this.debugMode == 2)  logger.debug(bf_MarketItem.runnerList[i].runnnerName + "  " + amountPlaceAvailableToLay);
                                                             bf_MarketItem.runnerList[i].placeBackOdds = backValue;
                                                             bf_MarketItem.runnerList[i].amountPlaceAvailableToLay = amountPlaceAvailableToLay;
                                                         }
