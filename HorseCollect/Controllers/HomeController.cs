@@ -53,6 +53,7 @@ namespace HorseCollect.Controllers
 
         public string getBfData(string debugMode)
         {
+            Console.WriteLine("Test Git commit");
             ////if (debugMode == "0") //No debug
             ////{
             ////}
