@@ -51,18 +51,8 @@ namespace HorseCollect.Controllers
             return View();
         }
 
-        public string getBfData(string debugMode)
+        public string TestBetfair(string debugMode)
         {
-            Console.WriteLine("Test Git commit");
-            ////if (debugMode == "0") //No debug
-            ////{
-            ////}
-            ////else if (debugMode == "1")  //severe
-            ////{
-            ////}
-            ////else if (debugMode == "2") //information
-            ////{ 
-            ////}
 
             ctrl.initApi(bfAccount.UserName, bfAccount.Password, bfKey);
 
@@ -87,7 +77,6 @@ namespace HorseCollect.Controllers
 
             ctrl = new BetfairApiCtrl(this.bfAccount);
 
-            //m_betfairCtr.ReadCookiesFromDisk();
             bool bref = ctrl.doLogin(bfAccount.UserName, bfAccount.Password);
             while (!bref && --retryCount > 0)
             {
@@ -98,7 +87,6 @@ namespace HorseCollect.Controllers
             if (!bref)
             {
                 Console.WriteLine("Betfair login failed...");
-                //refreshControls(true);
                 return;
             }
             Console.WriteLine("Betfair login successfully...");

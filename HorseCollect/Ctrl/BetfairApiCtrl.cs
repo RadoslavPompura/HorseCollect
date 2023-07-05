@@ -41,7 +41,6 @@ namespace HorseCollect.Ctrl
 
             arrangedHorseList = new List<HorseApiItem_Bf>();
             logger = new Logger();
-            //dateRange = Utils.ParseToInt(ConfigurationManager.AppSettings["daysRange"]);
             InitHttpClient();
         }
 
@@ -257,7 +256,6 @@ namespace HorseCollect.Ctrl
             }
         }
 
-        //Implement Horse data Arrange
         public List<HorseApiItem_Bf> getApiHorseList(int debugMode)
         {
             try
@@ -270,7 +268,6 @@ namespace HorseCollect.Ctrl
                 if (resList.Count == 0 || resList == null)
                     return null;
 
-                //getFavPrice(ref resList);
 
                 foreach (BetfairResItem item in resList)
                 {
@@ -319,9 +316,6 @@ namespace HorseCollect.Ctrl
                             horseItem.bfPlaceBack = placeBackOdds.ToString();
                             horseItem.winAvailableMoney = winAvailableMoney.ToString();
                             horseItem.placeAvailableMoney = placeAvailableMoney.ToString();
-                            //horseItem.bfEachWayLay = eacyWayLayOdds.ToString();
-                            //horseItem.bfEachWayBack = eacyWayBackOdds.ToString();
-                            //horseItem.bfFavPrice = favPrice.ToString();
                             horseItem.bfSelectionId = selectionItem.selectionId.ToString();
                             horseItem.numberOfRunners = numberOfRunners;
                             horseItem.numberOfWinners = NumberOfWinners;
@@ -439,17 +433,13 @@ namespace HorseCollect.Ctrl
                 foreach (EventResult race in eventResultList)
                 {
                     BetfairResItem bf_ResItem = new BetfairResItem();
-                    //nMarketCount = nMarketCount + race.MarketCount;
-                    //lisCategory[i].EventId = race.Event.Id;
                     bf_ResItem.eventId = race.Event.Id;
                     bf_ResItem.eventName = race.Event.Venue;
 
                     bf_ResItem.openTime = (DateTime)race.Event.OpenDate;
 
-                    //Timezone Differences
                     bf_ResItem.openTime = bf_ResItem.openTime.AddHours(2);
                     bf_ResItem.countryCode = race.Event.CountryCode;
-                    //bf_ResItem.marketCounts = race.MarketCount;
                     bf_ResItem.marketList = new List<BetfairMarketItem>();
 
                     listRace.Add(race.Event.Id);
@@ -472,7 +462,6 @@ namespace HorseCollect.Ctrl
 
                 List<BetfairMarketItem> total_MarketList = new List<BetfairMarketItem>();
 
-                //marketFilter.EventIds = listRace;
                 int nMarketCount = 1000;
 
                 for (int m = 0; m < listRace.Count; m++)
@@ -489,12 +478,9 @@ namespace HorseCollect.Ctrl
 
                     foreach (MarketCatalogue catalogue in marketCatalogueList)
                     {
-                        //1 hour Differences
                         string catalogueTime = Utils.getTimeFormat(Convert.ToInt32(catalogue.Description.MarketTime.AddHours(1).TimeOfDay.TotalMinutes));
 
                         string marketTypeStr = catalogue.Description.MarketType;
-
-                        //string catalogueTime = catalogue.MarketStartTime.ToString();
 
                         if (marketTypeStr.Equals("WIN"))
                             listWinMarketId.Add(catalogue.MarketId);
@@ -622,8 +608,6 @@ namespace HorseCollect.Ctrl
                                                 break;
 
                                             bf_MarketItem.marketId_Win = marketBook.MarketId;
-                                            //bf_MarketItem.NumberOfRunners = marketBook.NumberOfActiveRunners;
-                                            //bf_MarketItem.NumberOfWinners = marketBook.NumberOfWinners;
 
                                             foreach (Runner runner in marketBook.Runners)
                                             {
@@ -656,7 +640,6 @@ namespace HorseCollect.Ctrl
                                                             bf_MarketItem.runnerList[i].amountWinAvailableToLay = amountWinAvailableToLay;
                                                         }
                                                         catch (Exception ex) { }
-                                                        //lisIds = new HashSet<string>();
                                                         break;
 
                                                     }
@@ -676,10 +659,6 @@ namespace HorseCollect.Ctrl
                                         {
                                             if (marketBook.Runners == null || marketBook.Runners.Count < 1)
                                                 break;
-
-                                            //bf_MarketItem.marketId_Win = marketBook.MarketId;
-                                            //bf_MarketItem.NumberOfRunners = marketBook.NumberOfActiveRunners;
-                                            //bf_MarketItem.NumberOfWinners = marketBook.NumberOfWinners;
 
                                             foreach (Runner runner in marketBook.Runners)
                                             {
@@ -710,7 +689,6 @@ namespace HorseCollect.Ctrl
                                                             bf_MarketItem.runnerList[i].eachWayBackOdds = backValue;
                                                         }
                                                         catch (Exception ex) { }
-                                                        //lisIds = new HashSet<string>();
                                                         break;
 
                                                     }
@@ -723,7 +701,6 @@ namespace HorseCollect.Ctrl
                                         }
                                         break;
 
-                                        //getValue(marketBook, ref bf_MarketItem);
                                     }
 
                                     if (bf_MarketItem.marketId_Place == marketBook.MarketId && marketType.Equals("PLACE"))
@@ -765,7 +742,6 @@ namespace HorseCollect.Ctrl
                                                             bf_MarketItem.runnerList[i].amountPlaceAvailableToLay = amountPlaceAvailableToLay;
                                                         }
                                                         catch (Exception ex) { }
-                                                        //lisIds = new HashSet<string>();
                                                         break;
 
                                                     }
@@ -777,14 +753,11 @@ namespace HorseCollect.Ctrl
                                             logger.severe("[Betfair]Error(getValue) :" + ex.Message);
                                         }
                                         break;
-
-                                        //getValue(marketBook, ref bf_MarketItem);
                                     }
                                 }
                             }
                         }
 
-                        //}
                         lisIds = new HashSet<string>();
                     }
                 }
@@ -914,8 +887,6 @@ namespace HorseCollect.Ctrl
                     }
                 }
 
-
-
                 var raceList = clientDelay.ListRaceDetails(listRace, null).Result;
 
                 List<string> raceids = new List<string>();
@@ -952,7 +923,6 @@ namespace HorseCollect.Ctrl
                     }
                     catch (Exception e)
                     {
-                        //m_handlerWriteBetfairStatus("Problem writing cookies to disk: " + e.GetType());
                     }
                 }
             }
@@ -978,7 +948,6 @@ namespace HorseCollect.Ctrl
             }
             catch (Exception e)
             {
-                //m_handlerWriteBetfairStatus("Problem reading cookies from disk: " + e.GetType());
                 cookieJar = new CookieContainer();
             }
             return cookieJar;

@@ -2,7 +2,7 @@
 {
     var debugMode = selectElement = document.querySelector('#selectDebug').value;
 
-    var url = "/Home/getBfData?debugMode=" + debugMode;
+    var url = "/Home/TestBetfair?debugMode=" + debugMode;
 
     showProgress_map_upload();
     $.ajax({
