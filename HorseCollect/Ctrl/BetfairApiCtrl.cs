@@ -342,42 +342,6 @@ namespace HorseCollect.Ctrl
             return null;
         }
 
-        public void getFavPrice(ref List<BetfairResItem> raceList)
-        {
-            List<BetfairResItem> resList = new List<BetfairResItem>();
-
-            try
-            {
-                foreach (BetfairResItem item in raceList)
-                {
-                    string raceNameStr = item.eventName;
-
-                    foreach (BetfairMarketItem one in item.marketList)
-                    {
-                        double minOdds = 2000.0f;
-
-                        List<BetfairSelectionItem> runnerList = new List<BetfairSelectionItem>();
-
-                        foreach (BetfairSelectionItem selectionItem in one.runnerList)
-                        {
-                            double winBackOdds = selectionItem.winBackOdds;
-
-                            if (minOdds >= winBackOdds) minOdds = winBackOdds;
-                        }
-
-                        foreach (BetfairSelectionItem selectionItem in one.runnerList)
-                        {
-                            selectionItem.favPrice = minOdds;
-                        }
-
-                    }
-                }
-            }
-            catch (Exception ee)
-            { 
-            }
-        }
-
         public List<BetfairResItem> doScrapHorse()
         {
             string sport = "Horse Racing";
